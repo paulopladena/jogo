@@ -1,12 +1,13 @@
 import pygame
 import sys
+import carrega_vidas
 
 pygame.init()
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Jogo 2")
+pygame.display.set_caption("fase2_parte3")
 
 # Carregar imagens
 perso_parado_d = pygame.image.load('sprited1.png').convert_alpha()
@@ -15,8 +16,11 @@ perso_mov_d3 = pygame.image.load('sprited3.png').convert_alpha()
 perso_parado_e = pygame.image.load('spritee1.png').convert_alpha()
 perso_mov_e2 = pygame.image.load('spritee2.png').convert_alpha()
 perso_mov_e3 = pygame.image.load('spritee3.png').convert_alpha()
-pedra_img = pygame.image.load('pedra.png').convert_alpha()
-chao_img = pygame.image.load('chao.png').convert_alpha()
+plataforma_img = pygame.image.load('plataforma_madeira.png').convert_alpha()
+chao_img = pygame.image.load('chao_terra.png').convert_alpha()
+aguia_img = pygame.image.load('aguia.png').convert_alpha()
+placa_img = pygame.image.load('placa.png').convert_alpha()
+vida_img = pygame.image.load('vida.png').convert_alpha()
 
 # Cores
 WHITE = (255, 255, 255)
@@ -27,7 +31,7 @@ class Personagem(pygame.sprite.Sprite):
         super().__init__()
         self.image = perso_parado_d
         self.rect = self.image.get_rect()
-        self.rect.x = 36  # Centralizar na tela
+        self.rect.x = 50  # Centralizar na tela
         self.rect.y = SCREEN_HEIGHT - 150
         self.velocidade_y = 0
         self.no_chao = False
@@ -36,13 +40,29 @@ class Personagem(pygame.sprite.Sprite):
         self.velocidade = 3
         self.contador_sprite = 0  # Contador para controlar a troca de sprites
         self.limite_troca_sprite = 10
+        self.tempo_dano = None
+        self.dano_ativo = False  # Indica se o efeito de dano está ativo
+        self.vidas = carrega_vidas.vidas_personagem  # ➜ Inicia com 3 vidas
 
-    def update(self, movimento, plataformas, chaos):
+    def levar_dano(self):
+        """Ativa o estado de dano e reduz uma vida."""
+        if not self.dano_ativo:
+            self.tempo_dano = pygame.time.get_ticks()
+            self.dano_ativo = True
+            self.vidas -= 1  # ➜ Perde uma vida ao levar dano
+            carrega_vidas.vidas_personagem = self.vidas
+
+            if self.vidas < 0:
+                print("GAME OVER")  # ➜ Exibe game over no console
+                pygame.quit()
+                sys.exit()
+
+    def update(self, movimento, plataformas, chaos, inimigos):
         keys = pygame.key.get_pressed()
 
         # Controle do pulo
         if keys[pygame.K_SPACE] and self.no_chao:
-            self.velocidade_y = -15
+            self.velocidade_y = -18
             self.no_chao = False
 
         # Gravidade
@@ -59,6 +79,12 @@ class Personagem(pygame.sprite.Sprite):
                 self.velocidade_y = 0
                 self.no_chao = True
 
+        # for placa in placas:
+        #     if self.rect.colliderect(placa.rect) and self.velocidade_y >= 0:
+        #         self.rect.bottom = placa.rect.top
+        #         self.velocidade_y = 0
+        #         self.no_chao = True
+
         for chao in chaos:
             if self.rect.colliderect(chao.rect) and self.velocidade_y >= 0:
                 self.rect.bottom = chao.rect.top
@@ -72,6 +98,11 @@ class Personagem(pygame.sprite.Sprite):
             self.velocidade_y = 0
 
         self.rect.x += movimento
+        if self.rect.x >= 900:
+            rodando = False
+            import carrega_vidas
+            import fase3_parte1
+            fase3_parte1.jogo(carrega_vidas.vidas_personagem)
 
         # Verificar colisão horizontal com plataformas
         for plataforma in plataformas:
@@ -81,6 +112,23 @@ class Personagem(pygame.sprite.Sprite):
                     self.rect.right = plataforma.rect.left
                 elif movimento < 0:  # Indo para a esquerda
                     self.rect.left = plataforma.rect.right
+
+
+        for inimigo in inimigos:
+            if self.rect.colliderect(inimigo.rect) and self.velocidade_y >= 0:
+                #self.rect.bottom = inimigo.rect.top
+                self.velocidade_y = 0
+                self.no_chao = True
+                self.levar_dano()
+
+        # for inimigo in inimigos:
+        #     if self.rect.colliderect(inimigo.rect):
+        #         self.levar_dano()
+        #         # Ajustar posição com base no movimento
+        #         if movimento > 0:  # Indo para a direita
+        #             self.rect.right = inimigo.rect.left
+        #         elif movimento < 0:  # Indo para a esquerda
+        #             self.rect.left = inimigo.rect.right
 
         for chao in chaos:
             if self.rect.colliderect(chao.rect):
@@ -109,17 +157,74 @@ class Personagem(pygame.sprite.Sprite):
                 self.ultima_tecla = pygame.K_RIGHT
             self.contador_sprite = 0
 
+        # Quando solta a tecla, volta ao sprite parado
+        if movimento == 0:
+            if self.ultima_tecla == pygame.K_LEFT:
+                self.image = perso_parado_e
+            else:
+                self.image = perso_parado_d
+
+        # **Efeito de Dano**: Deixa a imagem vermelha por 1 segundo
+        if self.dano_ativo:
+            tempo_atual = pygame.time.get_ticks()
+            if tempo_atual - self.tempo_dano < 1000:  # Dura 1 segundo
+                image_temp = self.image.copy()
+                image_temp.fill((255, 0, 0, 100), special_flags=pygame.BLEND_RGBA_MULT)
+                self.image = image_temp
+            else:
+                self.dano_ativo = False  # Remove o efeito de dano
+
     def soltar_tecla(self, key):
         if key == pygame.K_LEFT:
             self.image = perso_parado_e
         elif key == pygame.K_RIGHT:
             self.image = perso_parado_d
 
+class Inimigo(pygame.sprite.Sprite):
+    def __init__(self, x, y, velocidade=2, amplitude=50):
+        super().__init__()
+        self.image = aguia_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.velocidade = velocidade  # Velocidade do movimento vertical
+        self.amplitude = amplitude  # Distância máxima que a plataforma pode se mover
+        self.y_inicial = y  # Posição inicial
+        self.direcao = 1  # 1 para descer, -1 para subir
+
+    def update(self):
+        # Move a plataforma dentro do intervalo definido por amplitude
+        self.rect.y += self.velocidade * self.direcao
+
+        # Inverte a direção se atingir os limites superior ou inferior
+        if abs(self.rect.y - self.y_inicial) >= self.amplitude:
+            self.direcao *= -1
+
 
 class Plataforma(pygame.sprite.Sprite):
+    def __init__(self, x, y, velocidade=2, amplitude=50):
+        super().__init__()
+        self.image = plataforma_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.velocidade = velocidade  # Velocidade do movimento vertical
+        self.amplitude = amplitude  # Distância máxima que a plataforma pode se mover
+        self.y_inicial = y  # Posição inicial
+        self.direcao = 1  # 1 para descer, -1 para subir
+
+    def update(self):
+        # Move a plataforma dentro do intervalo definido por amplitude
+        self.rect.y += self.velocidade * self.direcao
+
+        # Inverte a direção se atingir os limites superior ou inferior
+        if abs(self.rect.y - self.y_inicial) >= self.amplitude:
+            self.direcao *= -1
+
+class Placa(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pedra_img
+        self.image = placa_img
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -148,45 +253,64 @@ def carregar_parallax(caminhos_imagens, largura_tela):
 
 # Desenhar o parallax com scroll
 def desenhar_parallax(tela, parallax, deslocamento, largura_tela):
-    for camada in parallax:
+    alturas = [0, 150, 250, 350]  # Ajuste manual das alturas para cada camada
+
+    for i, camada in enumerate(parallax):
         posicao = -deslocamento % largura_tela
-        tela.blit(camada, (posicao, 0))
-        tela.blit(camada, (posicao - largura_tela, 0))
+        tela.blit(camada, (posicao, alturas[i]))
+        tela.blit(camada, (posicao - largura_tela, alturas[i]))
 
+# Função para desenhar as vidas na tela
+def desenhar_vidas(tela, vidas):
+    for i in range(vidas):
+        tela.blit(vida_img, (10 + i * 40, 10))  # ➜ Exibe os corações no topo
 
-def jogo1():
+def jogo():
 
     caminhos_imagens = [
-        "ceu.png",
-        "deserto_fundo1.png",
-        "deserto_fundo2.png",
-        "deserto_perto.png"
+        "sky_cloud.png",
+        "mountain.png",
+        "pine1.png",
+        "pine2.png"
     ]
     parallax = carregar_parallax(caminhos_imagens, SCREEN_WIDTH)
 
     # Inicializar sprites
     personagem = Personagem()
     plataformas = pygame.sprite.Group()
+    placas = pygame.sprite.Group()
     chaos = pygame.sprite.Group()
+    inimigos = pygame.sprite.Group()
 
-    # ** Adicionar obstáculos manualmente **
-    posicoes_obstaculos = [
-        (600, SCREEN_HEIGHT - 100),  # Obstáculo 1
-        (1200, SCREEN_HEIGHT - 100),  # Obstáculo 2
-        (1800, SCREEN_HEIGHT - 100),  # Obstáculo 3
-        (2300, SCREEN_HEIGHT - 100),  # Obstáculo 4
-    ]
-    for x, y in posicoes_obstaculos:
-        plataformas.add(Plataforma(x, y))
+    #PLATAFORMA
 
-    posicoes_chaos = [
-        (-10, SCREEN_HEIGHT - 500),  # Obstáculo 1
-        (700, SCREEN_HEIGHT - 300),  # Obstáculo 2
-        (1400, SCREEN_HEIGHT - 450),  # Obstáculo 3
-        (2100, SCREEN_HEIGHT - 400),  # Obstáculo 4
+    # l1 = [(x, SCREEN_HEIGHT - (50 + (x - 200) // 2)) for x in range(600, 700, 100)]
+    # l2 = [(x, SCREEN_HEIGHT - 350) for x in range(900, 2100, 400)]
+    # p1 = l1+l2
+    # for x, y in p1:
+    #     plataformas.add(Plataforma(x, y, velocidade=2, amplitude=60))
+
+    #PLACA
+    posicoes_placas = [
+        (250, SCREEN_HEIGHT - 125),
+        (2000, SCREEN_HEIGHT - 125)
     ]
+    for x, y in posicoes_placas:
+        placas.add(Placa(x, y))
+
+    #CHAO
+    posicoes_chaos = [(x, SCREEN_HEIGHT - 50) for x in range(-100, 3000, 750)]
     for x, y in posicoes_chaos:
         chaos.add(Chao(x, y))
+
+    # AGUIA
+    l1 = [(x, SCREEN_HEIGHT - (550 - (x - 200) // 2)) for x in range(400, 800, 100)]
+    l2 = [(x, SCREEN_HEIGHT - 300) for x in range(1200, 1600, 100)]
+
+    posicoes_inimigos = l1 + l2
+
+    for x, y in posicoes_inimigos:
+        inimigos.add(Inimigo(x, y, velocidade=2, amplitude=60))
 
     clock = pygame.time.Clock()
     rodando = True
@@ -207,7 +331,8 @@ def jogo1():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             movimento = -personagem.velocidade
-            movimento_horizontal = -2*personagem.velocidade
+            movimento_horizontal = -2 * personagem.velocidade
+
         elif keys[pygame.K_RIGHT]:
             movimento = personagem.velocidade
             movimento_horizontal = 2*personagem.velocidade
@@ -216,23 +341,36 @@ def jogo1():
         deslocamento += movimento_horizontal
 
         # Atualizar posição do personagem
-        personagem.update(movimento, plataformas, chaos)
-
-        # Desenhar fundo e sprites
-        screen.fill(WHITE)
-        desenhar_parallax(screen, parallax, deslocamento, SCREEN_WIDTH)
+        personagem.update(movimento, plataformas, chaos, inimigos)
 
         # Atualizar posição das plataformas em relação ao movimento
         for plataforma in plataformas:
             plataforma.rect.x -= movimento_horizontal
 
+        for placa in placas:
+            placa.rect.x -= movimento_horizontal
+
         for chao in chaos:
             chao.rect.x -= movimento_horizontal
 
+        for inimigo in inimigos:
+            inimigo.rect.x -= movimento_horizontal
+
+        # Desenhar fundo e sprites
+        screen.fill(WHITE)
+        desenhar_parallax(screen, parallax, deslocamento, SCREEN_WIDTH)
         # Desenhar plataformas e personagem
         plataformas.draw(screen)
         chaos.draw(screen)
+        placas.draw(screen)
+        inimigos.draw(screen)
         screen.blit(personagem.image, personagem.rect)
+
+        #plataformas.update()
+        inimigos.update()
+
+        # **Desenha as vidas na tela**
+        desenhar_vidas(screen, personagem.vidas)
 
         pygame.display.flip()
         clock.tick(60)
@@ -241,4 +379,4 @@ def jogo1():
     sys.exit()
 
 
-jogo1()
+jogo()

@@ -46,7 +46,7 @@ class Personagem(pygame.sprite.Sprite):
         self.frame_delay = 10  # Número de frames antes de trocar a imagem
         self.frame_contador = 0  # Contador para controlar a troca de frame
         self.tempo_dano = None
-        self.vidas = 3
+        self.vidas = 1
 
     def update(self):
         keys = pygame.key.get_pressed()

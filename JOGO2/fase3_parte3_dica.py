@@ -1,5 +1,6 @@
 import pygame
 import sys
+import carrega_vidas
 
 pygame.init()
 
@@ -50,7 +51,7 @@ class Personagem(pygame.sprite.Sprite):
         self.limite_troca_sprite = 10
         self.tempo_dano = None
         self.dano_ativo = False  # Indica se o efeito de dano está ativo
-        self.vidas = 50  # ➜ Inicia com 3 vidas
+        self.vidas = carrega_vidas.vidas_personagem
 
     def levar_dano(self):
         """Ativa o estado de dano e reduz uma vida."""
@@ -59,7 +60,7 @@ class Personagem(pygame.sprite.Sprite):
             self.dano_ativo = True
             self.vidas -= 1  # ➜ Perde uma vida ao levar dano
 
-            if self.vidas <= 0:
+            if self.vidas < 0:
                 print("GAME OVER")  # ➜ Exibe game over no console
                 pygame.quit()
                 sys.exit()
@@ -104,11 +105,12 @@ class Personagem(pygame.sprite.Sprite):
             self.no_chao = True
             self.velocidade_y = 0
 
-        self.rect.x += movimento
-        if self.rect.x >= 900:
-            rodando = False
-            import fase3_parte2
-            fase3_parte2.jogo()
+        # self.rect.x += movimento
+        # if self.rect.x >= 900:
+        #     rodando = False
+        #     import carrega_vidas
+        #     import fase3_parte2
+        #     fase3_parte2.jogo(carrega_vidas.vidas_personagem)
 
         # Verificar colisão horizontal com plataformas
         for plataforma in plataformas:

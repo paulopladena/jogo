@@ -1,12 +1,13 @@
 import pygame
 import sys
+import carrega_vidas
 
 pygame.init()
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("fase3_parte3")
+pygame.display.set_caption("fase1_parte3")
 
 # Carregar imagens
 perso_parado_d = pygame.image.load('sprited1.png').convert_alpha()
@@ -50,7 +51,7 @@ class Personagem(pygame.sprite.Sprite):
         self.limite_troca_sprite = 10
         self.tempo_dano = None
         self.dano_ativo = False  # Indica se o efeito de dano está ativo
-        self.vidas = 3  # ➜ Inicia com 3 vidas
+        self.vidas = carrega_vidas.vidas_personagem
 
     def levar_dano(self):
         """Ativa o estado de dano e reduz uma vida."""
@@ -58,8 +59,9 @@ class Personagem(pygame.sprite.Sprite):
             self.tempo_dano = pygame.time.get_ticks()
             self.dano_ativo = True
             self.vidas -= 1  # ➜ Perde uma vida ao levar dano
+            carrega_vidas.vidas_personagem = self.vidas
 
-            if self.vidas <= 0:
+            if self.vidas < 0:
                 print("GAME OVER")  # ➜ Exibe game over no console
                 pygame.quit()
                 sys.exit()
@@ -291,9 +293,6 @@ class NPC(pygame.sprite.Sprite):
                     self.contador += 1
                 else:
                     self.mensagem_resposta = " "
-                    rodando = False
-                    import fase1_parte1
-                    fase1_parte1.jogo()
 
                 self.mensagem_timer = pygame.time.get_ticks() + 500  # Exibe por 1 segundo
                 break
@@ -303,14 +302,6 @@ class NPC(pygame.sprite.Sprite):
         if self.questao_atual < len(self.questoes) - 1:
             self.questao_atual += 1
             self.resposta_selecionada = None  # Reseta seleção
-        if self.contador == 2:
-            rodando = False
-            import fase2_parte1
-            fase2_parte1.jogo()
-
-
-
-# Carregar as imagens do parallax
 def carregar_parallax(caminhos_imagens, largura_tela):
     camadas = []
     for caminho in caminhos_imagens:

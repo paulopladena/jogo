@@ -1,5 +1,6 @@
 import pygame
 import sys
+import carrega_vidas
 
 pygame.init()
 
@@ -41,7 +42,7 @@ class Personagem(pygame.sprite.Sprite):
         self.limite_troca_sprite = 10
         self.tempo_dano = None
         self.dano_ativo = False  # Indica se o efeito de dano está ativo
-        self.vidas = 3  # ➜ Inicia com 3 vidas
+        self.vidas = carrega_vidas.vidas_personagem  # ➜ Inicia com 3 vidas
 
     def levar_dano(self):
         """Ativa o estado de dano e reduz uma vida."""
@@ -49,8 +50,9 @@ class Personagem(pygame.sprite.Sprite):
             self.tempo_dano = pygame.time.get_ticks()
             self.dano_ativo = True
             self.vidas -= 1  # ➜ Perde uma vida ao levar dano
+            carrega_vidas.vidas_personagem = self.vidas
 
-            if self.vidas <= 0:
+            if self.vidas < 0:
                 print("GAME OVER")  # ➜ Exibe game over no console
                 pygame.quit()
                 sys.exit()
@@ -98,8 +100,9 @@ class Personagem(pygame.sprite.Sprite):
         self.rect.x += movimento
         if self.rect.x >= 900:
             rodando = False
-            import fase3_parte2
-            fase3_parte2.jogo()
+            import carrega_vidas
+            import fase2_parte3
+            fase2_parte3.jogo(carrega_vidas.vidas_personagem)
 
         # Verificar colisão horizontal com plataformas
         for plataforma in plataformas:
@@ -113,19 +116,19 @@ class Personagem(pygame.sprite.Sprite):
 
         for inimigo in inimigos:
             if self.rect.colliderect(inimigo.rect) and self.velocidade_y >= 0:
-                self.rect.bottom = inimigo.rect.top
+                #self.rect.bottom = inimigo.rect.top
                 self.velocidade_y = 0
                 self.no_chao = True
                 self.levar_dano()
 
-        for inimigo in inimigos:
-            if self.rect.colliderect(inimigo.rect):
-                self.levar_dano()
-                # Ajustar posição com base no movimento
-                if movimento > 0:  # Indo para a direita
-                    self.rect.right = inimigo.rect.left
-                elif movimento < 0:  # Indo para a esquerda
-                    self.rect.left = inimigo.rect.right
+        # for inimigo in inimigos:
+        #     if self.rect.colliderect(inimigo.rect):
+        #         self.levar_dano()
+        #         # Ajustar posição com base no movimento
+        #         if movimento > 0:  # Indo para a direita
+        #             self.rect.right = inimigo.rect.left
+        #         elif movimento < 0:  # Indo para a esquerda
+        #             self.rect.left = inimigo.rect.right
 
         for chao in chaos:
             if self.rect.colliderect(chao.rect):
@@ -290,7 +293,7 @@ def jogo():
     #PLACA
     posicoes_placas = [
         (250, SCREEN_HEIGHT - 125),
-        (2300, SCREEN_HEIGHT - 125)
+        (2000, SCREEN_HEIGHT - 125)
     ]
     for x, y in posicoes_placas:
         placas.add(Placa(x, y))
@@ -301,7 +304,10 @@ def jogo():
         chaos.add(Chao(x, y))
 
     # AGUIA
-    posicoes_inimigos = [(x, SCREEN_HEIGHT - (550 - (x - 200) // 2)) for x in range(400, 1600, 100)]
+    l1 = [(x, SCREEN_HEIGHT - (550 - (x - 200) // 2)) for x in range(400, 800, 100)]
+    l2 = [(x, SCREEN_HEIGHT - 300) for x in range(1200, 1600, 100)]
+
+    posicoes_inimigos = l1 + l2
 
     for x, y in posicoes_inimigos:
         inimigos.add(Inimigo(x, y, velocidade=2, amplitude=60))

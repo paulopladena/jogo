@@ -1,5 +1,6 @@
 import pygame
 import sys
+import carrega_vidas
 
 pygame.init()
 
@@ -44,7 +45,7 @@ class Personagem(pygame.sprite.Sprite):
         self.ultima_tecla = None
         self.frame_delay = 10
         self.frame_contador = 0
-        self.vidas = 3
+        self.vidas = carrega_vidas.vidas_personagem
 
     def update(self):
         global personagem_na_nave
@@ -102,8 +103,9 @@ class Personagem(pygame.sprite.Sprite):
 
         if self.rect.x >= 935:
             rodando = False
+            import carrega_vidas
             import fase3_parte3
-            fase3_parte3.jogo()
+            fase3_parte3.jogo(carrega_vidas.vidas_personagem)
 
 
 class Tiro(pygame.sprite.Sprite):
@@ -186,7 +188,7 @@ class Chao(pygame.sprite.Sprite):
 
     def levar_tiro(self):
         self.vida -= 1
-        if self.vida <= 0:
+        if self.vida < 0:
             self.kill()
         else:
             self.tempo_dano = pygame.time.get_ticks()
