@@ -47,10 +47,9 @@ class Personagem(pygame.sprite.Sprite):
             self.dano_ativo = True
             self.vidas -= 1
 
-            if self.vidas <= 0:
-                print("GAME OVER")
-                pygame.quit()
-                sys.exit()
+            if self.vidas < 0:
+                import game_over
+                game_over.tela_fim()
 
     def update(self, movimento, movimentov, plataformas, chaos):
         keys = pygame.key.get_pressed()
@@ -92,6 +91,10 @@ class Personagem(pygame.sprite.Sprite):
             else:
                 self.dano_ativo = False  # Remove o efeito de dano
                 self.image = self.image_original  # Restaura a imagem original
+
+        if self.rect.x >= 880:
+            import fase2_parte3
+            fase2_parte3.jogo()
 
     def soltar_tecla(self, key):
         if key == pygame.K_LEFT:

@@ -21,9 +21,15 @@ chao_img = pygame.image.load('chao_terra.png').convert_alpha()
 aguia_img = pygame.image.load('aguia.png').convert_alpha()
 placa_img = pygame.image.load('placa.png').convert_alpha()
 vida_img = pygame.image.load('vida.png').convert_alpha()
+chefe_img = pygame.image.load('pesquisador.png').convert_alpha()
+
+fonte = pygame.font.SysFont(None, 24)
 
 # Cores
 WHITE = (255, 255, 255)
+BLACK = (0,0,0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
 
 # Classe do Personagem Principal
 class Personagem(pygame.sprite.Sprite):
@@ -53,11 +59,10 @@ class Personagem(pygame.sprite.Sprite):
             carrega_vidas.vidas_personagem = self.vidas
 
             if self.vidas < 0:
-                print("GAME OVER")  # ➜ Exibe game over no console
-                pygame.quit()
-                sys.exit()
+                import game_over
+                game_over.tela_fim()
 
-    def update(self, movimento, plataformas, chaos, inimigos):
+    def update(self, movimento, plataformas, chaos, inimigos, chefes):
         keys = pygame.key.get_pressed()
 
         # Controle do pulo
@@ -98,11 +103,7 @@ class Personagem(pygame.sprite.Sprite):
             self.velocidade_y = 0
 
         self.rect.x += movimento
-        if self.rect.x >= 900:
-            rodando = False
-            import carrega_vidas
-            import fase3_parte1
-            fase3_parte1.jogo(carrega_vidas.vidas_personagem)
+
 
         # Verificar colisão horizontal com plataformas
         for plataforma in plataformas:
@@ -237,6 +238,96 @@ class Chao(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+class NPC(Personagem): # NPC herda a classe Personagem
+    def __init__(self, x, y, personagem):
+        super().__init__()
+        self.image = chefe_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.mostrar_texto = False
+        self.pergunta_exibida = False
+        self.questao_atual = 0
+        self.resposta_selecionada = None
+        self.mensagem_resposta = None  # Mensagem temporária de acerto/erro
+        self.mensagem_timer = 0
+        self.contador = 0
+        self.personagem = personagem
+        self.questoes = [
+            {
+                "imagem": pygame.image.load("pergunta.png"),
+                "opcoes": {
+                    "A": pygame.Rect(SCREEN_WIDTH // 4 + 5, SCREEN_HEIGHT // 4 + 75, 40, 40),
+                    "B": pygame.Rect(SCREEN_WIDTH // 4 + 5, SCREEN_HEIGHT // 4 + 150, 40, 40),
+                    "C": pygame.Rect(SCREEN_WIDTH // 4 + 5, SCREEN_HEIGHT // 4 + 225, 40, 40),
+                    "D": pygame.Rect(SCREEN_WIDTH // 4 + 5, SCREEN_HEIGHT // 4 + 300, 40, 40)
+                },
+                "correta": "A"
+            },
+            {
+                "imagem": pygame.image.load("pergunta2.png"),
+                "opcoes": {
+                    "A": pygame.Rect(SCREEN_WIDTH // 4 + 5, SCREEN_HEIGHT // 4 + 75, 40, 40),
+                    "B": pygame.Rect(SCREEN_WIDTH // 4 + 5, SCREEN_HEIGHT // 4 + 150, 40, 40),
+                    "C": pygame.Rect(SCREEN_WIDTH // 4 + 5, SCREEN_HEIGHT // 4 + 225, 40, 40),
+                    "D": pygame.Rect(SCREEN_WIDTH // 4 + 5, SCREEN_HEIGHT // 4 + 300, 40, 40)
+                },
+                "correta": "B"
+            }
+        ]
+
+    def mostrar_mensagem(self):
+        """Exibe a pergunta, as opções e a mensagem de acerto/erro."""
+        questao = self.questoes[self.questao_atual]
+        screen.blit(questao["imagem"], (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4))
+
+        for opcao, rect in questao["opcoes"].items():
+            cor = BLACK  # Padrão: preto
+            if self.resposta_selecionada:
+                if opcao == self.resposta_selecionada:
+                    cor = GREEN if opcao == questao["correta"] else RED  # Verde ou vermelho
+
+            pygame.draw.rect(screen, cor, rect)  # Desenha quadrado da opção
+            texto = fonte.render(opcao, True, WHITE)
+            screen.blit(texto, (rect.x + 15, rect.y + 10))
+
+        # Exibe a mensagem "Acertou!" ou "Errou!" por 1 segundo
+        if self.mensagem_resposta:
+            msg_texto = fonte.render(self.mensagem_resposta, True, WHITE)
+            screen.blit(msg_texto, (350, 400))
+
+            # Checa se o tempo de exibição já passou
+            if pygame.time.get_ticks() > self.mensagem_timer:
+                self.mensagem_resposta = None  # Limpa mensagem
+                self.ir_para_proxima_pergunta()
+
+    def selecionar_opcao(self, mouse_pos):
+        """Verifica clique na opção e exibe mensagem de acerto ou erro."""
+        questao = self.questoes[self.questao_atual]
+
+        for opcao, rect in questao["opcoes"].items():
+            if rect.collidepoint(mouse_pos):
+                self.resposta_selecionada = opcao
+
+                if opcao == questao["correta"]:
+                    self.mensagem_resposta = " "
+                    self.contador += 1
+                else:
+                    self.mensagem_resposta = " "
+                    self.personagem.levar_dano()
+
+                self.mensagem_timer = pygame.time.get_ticks() + 1000  # Exibe por 1 segundo
+                break
+
+    def ir_para_proxima_pergunta(self):
+        """Passa para a próxima pergunta após exibir a mensagem."""
+        if self.questao_atual < len(self.questoes) - 1:
+            self.questao_atual += 1
+            self.resposta_selecionada = None  # Reseta seleção
+        if self.contador == 2:
+            import carrega_vidas
+            import fase3_parte1
+            fase3_parte1.jogo(carrega_vidas.vidas_personagem)
 
 # Carregar as imagens do parallax
 def carregar_parallax(caminhos_imagens, largura_tela):
@@ -281,6 +372,7 @@ def jogo():
     placas = pygame.sprite.Group()
     chaos = pygame.sprite.Group()
     inimigos = pygame.sprite.Group()
+    chefes = pygame.sprite.Group()
 
     #PLATAFORMA
 
@@ -293,10 +385,17 @@ def jogo():
     #PLACA
     posicoes_placas = [
         (250, SCREEN_HEIGHT - 125),
-        (2000, SCREEN_HEIGHT - 125)
+        (1800, SCREEN_HEIGHT - 125)
     ]
     for x, y in posicoes_placas:
         placas.add(Placa(x, y))
+
+    # PESQUISADOR (CHEFE)
+    posicoes_chefes = [
+        (2000, SCREEN_HEIGHT - 195)
+    ]
+    for x, y in posicoes_chefes:
+        chefes.add(NPC(x, y, personagem))
 
     #CHAO
     posicoes_chaos = [(x, SCREEN_HEIGHT - 50) for x in range(-100, 3000, 750)]
@@ -327,6 +426,9 @@ def jogo():
                 rodando = False
             if event.type == pygame.KEYUP:
                 personagem.soltar_tecla(event.key)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                chefe.selecionar_opcao(mouse_pos)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
@@ -341,7 +443,7 @@ def jogo():
         deslocamento += movimento_horizontal
 
         # Atualizar posição do personagem
-        personagem.update(movimento, plataformas, chaos, inimigos)
+        personagem.update(movimento, plataformas, chaos, inimigos, chefes)
 
         # Atualizar posição das plataformas em relação ao movimento
         for plataforma in plataformas:
@@ -356,6 +458,9 @@ def jogo():
         for inimigo in inimigos:
             inimigo.rect.x -= movimento_horizontal
 
+        for chefe in chefes:
+            chefe.rect.x -= movimento_horizontal
+
         # Desenhar fundo e sprites
         screen.fill(WHITE)
         desenhar_parallax(screen, parallax, deslocamento, SCREEN_WIDTH)
@@ -364,6 +469,7 @@ def jogo():
         chaos.draw(screen)
         placas.draw(screen)
         inimigos.draw(screen)
+        chefes.draw(screen)
         screen.blit(personagem.image, personagem.rect)
 
         #plataformas.update()
@@ -371,6 +477,24 @@ def jogo():
 
         # **Desenha as vidas na tela**
         desenhar_vidas(screen, personagem.vidas)
+
+        # Detectar interação com a placa
+        # if pygame.sprite.collide_rect(personagem, placa):
+        #     texto = fonte.render("Pressione S para ler", True, WHITE)
+        #     screen.blit(texto, (placa.rect.x - 20, placa.rect.y - 50))
+        #     if keys[pygame.K_s]:
+        #         placa.mostrar_texto = True
+        #         if placa.mostrar_texto:
+        #             placa.mostrar_mensagem()
+
+        # Detectar interação com a NPC
+        if pygame.sprite.collide_rect(personagem, chefe):
+            texto = fonte.render("Pressione S para responder as perguntas", True, BLACK)
+            screen.blit(texto, (chefe.rect.x - 40, chefe.rect.y - 8))
+            if keys[pygame.K_s]:
+                chefe.mostrar_texto = True
+                if chefe.mostrar_texto:
+                    chefe.mostrar_mensagem()
 
         pygame.display.flip()
         clock.tick(60)

@@ -59,9 +59,8 @@ class Personagem(pygame.sprite.Sprite):
             carrega_vidas.vidas_personagem = self.vidas
 
             if self.vidas < 0:
-                print("GAME OVER")  # ➜ Exibe game over no console
-                pygame.quit()
-                sys.exit()
+                import game_over
+                game_over.tela_fim()
 
     def update(self, movimento, plataformas, chaos, placas, portals):
         keys = pygame.key.get_pressed()
@@ -100,7 +99,6 @@ class Personagem(pygame.sprite.Sprite):
 
         for portal in portals:
             if self.rect.colliderect(portal.rect):
-                self.rect.bottom = portal.rect.top
                 import fase1_dica
                 fase1_dica.jogo1()
 
@@ -114,7 +112,6 @@ class Personagem(pygame.sprite.Sprite):
         self.rect.x += movimento
         #print(self.rect.x)
         if self.rect.x >= 900:
-            rodando = False
             import carrega_vidas
             import fase1_parte3
             fase1_parte3.jogo(carrega_vidas.vidas_personagem)
@@ -145,13 +142,13 @@ class Personagem(pygame.sprite.Sprite):
                 elif movimento < 0:  # Indo para a esquerda
                     self.rect.left = chao.rect.right
 
-        for portal in portals:
-            if self.rect.colliderect(portal.rect):
-                # Ajustar posição com base no movimento
-                if movimento > 0:  # Indo para a direita
-                    self.rect.right = portal.rect.left
-                elif movimento < 0:  # Indo para a esquerda
-                    self.rect.left = portal.rect.right
+        # for portal in portals:
+        #     if self.rect.colliderect(portal.rect):
+        #         # Ajustar posição com base no movimento
+        #         if movimento > 0:  # Indo para a direita
+        #             self.rect.right = portal.rect.left
+        #         elif movimento < 0:  # Indo para a esquerda
+        #             self.rect.left = portal.rect.right
 
 
         # Alternar sprites durante o movimento

@@ -59,9 +59,8 @@ class Personagem(pygame.sprite.Sprite):
             carrega_vidas.vidas_personagem = self.vidas
 
             if self.vidas < 0:
-                print("GAME OVER")  # ➜ Exibe game over no console
-                pygame.quit()
-                sys.exit()
+                import game_over
+                game_over.tela_fim()
 
     def update(self, movimento, plataformas, chaos, placas, portals):
         keys = pygame.key.get_pressed()
@@ -114,7 +113,6 @@ class Personagem(pygame.sprite.Sprite):
         self.rect.x += movimento
         #print(self.rect.x)
         if self.rect.x >= 900:
-            rodando = False
             import carrega_vidas
             import fase1_parte3_dica
             fase1_parte3_dica.jogo(carrega_vidas.vidas_personagem)

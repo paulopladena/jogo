@@ -29,6 +29,9 @@ caixa_dialogo_img = pygame.image.load('caixa_dialogo.png')
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
+som = pygame.mixer.Sound('lets-dance-126506.ogg')
+canal = pygame.mixer.Channel(0)
+
 dano = None
 
 # Classe do Personagem Principal
@@ -94,6 +97,11 @@ class Personagem(pygame.sprite.Sprite):
             else:
                 self.tempo_dano = None  # Reseta o tempo de dano
 
+        if self.vidas < 0:
+            canal.pause()
+            import game_over
+            game_over.tela_fim()
+
         # Checar colisão com plataformas
         # colidiu_plataforma = pygame.sprite.spritecollide(self, plataformas, False)
         # if colidiu_plataforma and self.velocidade_y >= 0:
@@ -125,9 +133,11 @@ class Personagem(pygame.sprite.Sprite):
 
         if self.rect.y <= 10 and (self.rect.x >= 360 and self.rect.x <= 633):
             if mostrar_dica:
+                canal.pause()
                 import fase1_parte2_dica
                 fase1_parte2_dica.jogo()
             else:
+                canal.pause()
                 import fase1_parte2
                 fase1_parte2.jogo()
 
@@ -260,6 +270,7 @@ def jogo1():
 
     fase1()
     clock = pygame.time.Clock()
+    canal.play(som, loops=-1)
     rodando = True
 
     while rodando:

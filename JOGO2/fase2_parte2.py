@@ -21,6 +21,7 @@ chao_img = pygame.image.load('chao_terra.png').convert_alpha()
 aguia_img = pygame.image.load('aguia.png').convert_alpha()
 placa_img = pygame.image.load('placa.png').convert_alpha()
 vida_img = pygame.image.load('vida.png').convert_alpha()
+portal_img = pygame.image.load('portal_mar.png').convert_alpha()
 
 # Cores
 WHITE = (255, 255, 255)
@@ -53,11 +54,10 @@ class Personagem(pygame.sprite.Sprite):
             carrega_vidas.vidas_personagem = self.vidas
 
             if self.vidas < 0:
-                print("GAME OVER")  # ➜ Exibe game over no console
-                pygame.quit()
-                sys.exit()
+                import game_over
+                game_over.tela_fim()
 
-    def update(self, movimento, plataformas, chaos, inimigos):
+    def update(self, movimento, plataformas, chaos, inimigos, portals):
         keys = pygame.key.get_pressed()
 
         # Controle do pulo
@@ -91,6 +91,11 @@ class Personagem(pygame.sprite.Sprite):
                 self.velocidade_y = 0
                 self.no_chao = True
 
+        for portal in portals:
+            if self.rect.colliderect(portal.rect):
+                import fase2_dica
+                fase2_dica.jogo1()
+
         # Evitar que caia do chão
         if self.rect.bottom >= SCREEN_HEIGHT - 50:
             self.rect.bottom = SCREEN_HEIGHT - 50
@@ -99,7 +104,6 @@ class Personagem(pygame.sprite.Sprite):
 
         self.rect.x += movimento
         if self.rect.x >= 900:
-            rodando = False
             import carrega_vidas
             import fase2_parte3
             fase2_parte3.jogo(carrega_vidas.vidas_personagem)
@@ -237,6 +241,13 @@ class Chao(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+class Portal(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = portal_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 # Carregar as imagens do parallax
 def carregar_parallax(caminhos_imagens, largura_tela):
@@ -281,6 +292,7 @@ def jogo():
     placas = pygame.sprite.Group()
     chaos = pygame.sprite.Group()
     inimigos = pygame.sprite.Group()
+    portals = pygame.sprite.Group()
 
     #PLATAFORMA
 
@@ -293,15 +305,22 @@ def jogo():
     #PLACA
     posicoes_placas = [
         (250, SCREEN_HEIGHT - 125),
-        (2000, SCREEN_HEIGHT - 125)
+        (1700, SCREEN_HEIGHT - 125)
     ]
     for x, y in posicoes_placas:
         placas.add(Placa(x, y))
 
     #CHAO
-    posicoes_chaos = [(x, SCREEN_HEIGHT - 50) for x in range(-100, 3000, 750)]
+    posicoes_chaos = [(x, SCREEN_HEIGHT - 50) for x in range(-100, 2000, 750)]
     for x, y in posicoes_chaos:
         chaos.add(Chao(x, y))
+
+    # PORTAL
+    posicoes_portals = [
+        (2000, SCREEN_HEIGHT - 50)
+    ]
+    for x, y in posicoes_portals:
+        portals.add(Portal(x, y))
 
     # AGUIA
     l1 = [(x, SCREEN_HEIGHT - (550 - (x - 200) // 2)) for x in range(400, 800, 100)]
@@ -341,7 +360,7 @@ def jogo():
         deslocamento += movimento_horizontal
 
         # Atualizar posição do personagem
-        personagem.update(movimento, plataformas, chaos, inimigos)
+        personagem.update(movimento, plataformas, chaos, inimigos, portals)
 
         # Atualizar posição das plataformas em relação ao movimento
         for plataforma in plataformas:
@@ -356,6 +375,9 @@ def jogo():
         for inimigo in inimigos:
             inimigo.rect.x -= movimento_horizontal
 
+        for portal in portals:
+            portal.rect.x -= movimento_horizontal
+
         # Desenhar fundo e sprites
         screen.fill(WHITE)
         desenhar_parallax(screen, parallax, deslocamento, SCREEN_WIDTH)
@@ -364,6 +386,7 @@ def jogo():
         chaos.draw(screen)
         placas.draw(screen)
         inimigos.draw(screen)
+        portals.draw(screen)
         screen.blit(personagem.image, personagem.rect)
 
         #plataformas.update()

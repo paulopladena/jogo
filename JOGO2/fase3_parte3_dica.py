@@ -61,9 +61,8 @@ class Personagem(pygame.sprite.Sprite):
             self.vidas -= 1  # ➜ Perde uma vida ao levar dano
 
             if self.vidas < 0:
-                print("GAME OVER")  # ➜ Exibe game over no console
-                pygame.quit()
-                sys.exit()
+                import game_over
+                game_over.tela_fim()
 
     def update(self, movimento, plataformas, chaos, inimigos, aliens):
         keys = pygame.key.get_pressed()
@@ -246,8 +245,8 @@ class Chao(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-class NPC(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+class NPC(Personagem): # NPC herda a classe Personagem
+    def __init__(self, x, y, personagem):
         super().__init__()
         self.image = alien_img
         self.rect = self.image.get_rect()
@@ -259,6 +258,8 @@ class NPC(pygame.sprite.Sprite):
         self.resposta_selecionada = None
         self.mensagem_resposta = None  # Mensagem temporária de acerto/erro
         self.mensagem_timer = 0
+        self.contador = 0
+        self.personagem = personagem
         self.questoes = [
             {
                 "imagem": pygame.image.load("pergunta.png"),
@@ -317,8 +318,10 @@ class NPC(pygame.sprite.Sprite):
 
                 if opcao == questao["correta"]:
                     self.mensagem_resposta = " "
+                    self.contador += 1
                 else:
                     self.mensagem_resposta = " "
+                    self.personagem.levar_dano()
 
                 self.mensagem_timer = pygame.time.get_ticks() + 1000  # Exibe por 1 segundo
                 break
@@ -429,7 +432,7 @@ def jogo():
         (1600, SCREEN_HEIGHT - 175)
     ]
     for x, y in posicoes_aliens:
-        aliens.add(NPC(x, y))
+        aliens.add(NPC(x, y, personagem))
 
     clock = pygame.time.Clock()
     rodando = True

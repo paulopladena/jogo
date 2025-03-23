@@ -25,6 +25,7 @@ vida_img = pygame.image.load('vida.png').convert_alpha()
 dica_img = pygame.image.load('dica.png')
 caixa_dialogo_img = pygame.image.load('caixa_dialogo.png')
 farao_img = pygame.image.load('farao.png')
+game_over_img = pygame.image.load('fim de jogo.png')
 
 fonte = pygame.font.SysFont(None, 24)
 
@@ -62,9 +63,8 @@ class Personagem(pygame.sprite.Sprite):
             carrega_vidas.vidas_personagem = self.vidas
 
             if self.vidas < 0:
-                print("GAME OVER")  # ➜ Exibe game over no console
-                pygame.quit()
-                sys.exit()
+                import game_over
+                game_over.tela_fim()
 
     def update(self, movimento, plataformas, chaos, placas, faraos):
         keys = pygame.key.get_pressed()
@@ -79,6 +79,7 @@ class Personagem(pygame.sprite.Sprite):
         if self.velocidade_y > 7:
             self.velocidade_y = 7
         self.rect.y += self.velocidade_y
+
 
         # Verificar colisão com o chão e plataformas
         self.no_chao = False
@@ -109,8 +110,7 @@ class Personagem(pygame.sprite.Sprite):
 
         self.rect.x += movimento
         #print(self.rect.x)
-        if self.rect.x >= 900:
-            rodando = False
+        #if self.rect.x >= 900:
             # import jogo_fase1_parte3
             # jogo_fase1_parte2.jogo2()
 
@@ -217,8 +217,8 @@ class Papel(pygame.sprite.Sprite):
             # Desenhar caixa de diálogo com imagem
             screen.blit(caixa_dialogo_img, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4))
 
-class NPC(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+class NPC(Personagem): # NPC herda a classe Personagem
+    def __init__(self, x, y, personagem):
         super().__init__()
         self.image = farao_img
         self.rect = self.image.get_rect()
@@ -231,6 +231,7 @@ class NPC(pygame.sprite.Sprite):
         self.mensagem_resposta = None  # Mensagem temporária de acerto/erro
         self.mensagem_timer = 0
         self.contador = 0
+        self.personagem = personagem
         self.questoes = [
             {
                 "imagem": pygame.image.load("pergunta.png"),
@@ -292,9 +293,7 @@ class NPC(pygame.sprite.Sprite):
                     self.contador += 1
                 else:
                     self.mensagem_resposta = " "
-                    rodando = False
-                    import fase1_parte1
-                    fase1_parte1.jogo()
+                    self.personagem.levar_dano()
 
                 self.mensagem_timer = pygame.time.get_ticks() + 1000  # Exibe por 1 segundo
                 break
@@ -305,7 +304,6 @@ class NPC(pygame.sprite.Sprite):
             self.questao_atual += 1
             self.resposta_selecionada = None  # Reseta seleção
         if self.contador == 2:
-            rodando = False
             import carrega_vidas
             import fase2_parte1
             fase2_parte1.jogo(carrega_vidas.vidas_personagem)
@@ -380,7 +378,7 @@ def jogo():
         (1550, SCREEN_HEIGHT - 750)
     ]
     for x, y in posicoes_faraos:
-        faraos.add(NPC(x, y))
+        faraos.add(NPC(x, y, personagem))
 
 
     clock = pygame.time.Clock()
@@ -438,9 +436,6 @@ def jogo():
         faraos.draw(screen)
         screen.blit(personagem.image, personagem.rect)
 
-        # **Desenha as vidas na tela**
-        desenhar_vidas(screen, personagem.vidas)
-        desenhar_dica(screen)  # Mantém a dica na tela
 
         if keys[pygame.K_d]:
             papel.mostrar_dica = True
@@ -465,7 +460,9 @@ def jogo():
                 if farao.mostrar_texto:
                     farao.mostrar_mensagem()
 
-
+        # **Desenha as vidas na tela**
+        desenhar_dica(screen)  # Mantém a dica na tela
+        desenhar_vidas(screen, personagem.vidas)
 
         pygame.display.flip()
         clock.tick(60)

@@ -26,6 +26,12 @@ BLACK = (0, 0, 0)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
 
+som = pygame.mixer.Sound('cowbell-for-songs-phonk-217006.ogg')
+som2 = pygame.mixer.Sound('winfantasia-6912.ogg')
+
+canal = pygame.mixer.Channel(0)
+canal2 = pygame.mixer.Channel(1)
+
 # Grupo de tiros
 tiros = pygame.sprite.Group()
 tiros_inimigos = pygame.sprite.Group()  # Novo grupo para os tiros dos inimigos
@@ -91,10 +97,10 @@ class Personagem(pygame.sprite.Sprite):
 
     def levar_dano(self):
         self.vidas -= 1
-        if self.vidas <= 0:
-            rodando = False
-            import fase3_parte1
-            fase3_parte1.jogo()
+        if self.vidas < 0:
+            canal.pause()
+            import game_over
+            game_over.tela_fim()
 
         else:
             self.tempo_dano = pygame.time.get_ticks()  # Registra o tempo do dano
@@ -148,7 +154,7 @@ class Inimigo(pygame.sprite.Sprite):
 
     def levar_tiro(self):
         self.vida -= 1
-        if self.vida <= 0:
+        if self.vida < 0:
             self.kill()
         else:
             self.tempo_dano = pygame.time.get_ticks()
@@ -208,7 +214,7 @@ class Chefe(pygame.sprite.Sprite):
 
     def levar_tiro(self):
         self.vida -= 1
-        if self.vida <= 0:
+        if self.vida < 0:
             self.kill()
         else:
             self.tempo_dano = pygame.time.get_ticks()
@@ -265,6 +271,7 @@ def desenhar_vidas(tela, vidas):
 def jogo1():
     fase1()
     clock = pygame.time.Clock()
+    canal.play(som, loops=-1)
     rodando = True
     tempo_vitoria = None
 
@@ -295,6 +302,8 @@ def jogo1():
 
         # Verifica se todos os inimigos e o chefe foram derrotados
         if not inimigos and not chefe and not personagem.vitoria:
+            canal.pause()
+            canal2.play(som2)
             personagem.vitoria = True
             tempo_vitoria = pygame.time.get_ticks()
 

@@ -102,7 +102,6 @@ class Personagem(pygame.sprite.Sprite):
             todos_sprites.remove(self)  # Remove o personagem da tela
 
         if self.rect.x >= 935:
-            rodando = False
             import carrega_vidas
             import fase3_parte3
             fase3_parte3.jogo(carrega_vidas.vidas_personagem)
@@ -148,7 +147,6 @@ class Nave(pygame.sprite.Sprite):
             self.rect.x += 7
         if keys[pygame.K_UP] and self.rect.top > -300:
             self.rect.y -= 7
-            print(self.rect.y)
         if keys[pygame.K_DOWN] and self.rect.bottom < SCREEN_HEIGHT - 70:
             self.rect.y += 7
 
@@ -156,7 +154,6 @@ class Nave(pygame.sprite.Sprite):
             self.atirar()
 
         if keys[pygame.K_UP] and self.rect.y <=  -300:
-            rodando = False
             import fase3_dica
             fase3_dica.jogo()
 
