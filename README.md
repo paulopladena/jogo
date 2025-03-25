@@ -1,1 +1,1 @@
-# jogo
+# Jogo 'Aventura Estatística'
