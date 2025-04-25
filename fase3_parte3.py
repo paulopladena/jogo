@@ -262,8 +262,8 @@ class Papel(pygame.sprite.Sprite):
         if self.mostrar_dica:
             # Desenhar caixa de diálogo com imagem
             import carrega_vidas
-            screen.blit(carrega_vidas.bq[carrega_vidas.selec2[0]]['dica'], (0, SCREEN_HEIGHT // 4))
-            screen.blit(carrega_vidas.bq[carrega_vidas.selec2[1]]['dica'], (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4))
+            screen.blit(carrega_vidas.bq[carrega_vidas.selec3[0]]['dica'], (0, SCREEN_HEIGHT // 4))
+            screen.blit(carrega_vidas.bq[carrega_vidas.selec3[1]]['dica'], (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4))
 
 class Placa(pygame.sprite.Sprite):
     def __init__(self, x, y):
