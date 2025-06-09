@@ -88,12 +88,6 @@ class Personagem(pygame.sprite.Sprite):
                 self.velocidade_y = 0
                 self.no_chao = True
 
-        # for seta in setas:
-        #     if self.rect.colliderect(seta.rect) and self.velocidade_y >= 0:
-        #         self.rect.bottom = seta.rect.top
-        #         self.velocidade_y = 0
-        #         self.no_chao = True
-
         for chao in chaos:
             if self.rect.colliderect(chao.rect) and self.velocidade_y >= 0:
                 self.rect.bottom = chao.rect.top
@@ -129,15 +123,6 @@ class Personagem(pygame.sprite.Sprite):
                 self.velocidade_y = 0
                 self.no_chao = True
                 self.levar_dano()
-
-        # for inimigo in inimigos:
-        #     if self.rect.colliderect(inimigo.rect):
-        #         self.levar_dano()
-        #         # Ajustar posição com base no movimento
-        #         if movimento > 0:  # Indo para a direita
-        #             self.rect.right = inimigo.rect.left
-        #         elif movimento < 0:  # Indo para a esquerda
-        #             self.rect.left = inimigo.rect.right
 
         for chao in chaos:
             if self.rect.colliderect(chao.rect):
@@ -188,26 +173,6 @@ class Personagem(pygame.sprite.Sprite):
             self.image = perso_parado_e
         elif key == pygame.K_RIGHT:
             self.image = perso_parado_d
-
-# class Inimigo(pygame.sprite.Sprite):
-#     def __init__(self, x, y, velocidade=2, amplitude=50):
-#         super().__init__()
-#         self.image = aguia_img
-#         self.rect = self.image.get_rect()
-#         self.rect.x = x
-#         self.rect.y = y
-#         self.velocidade = velocidade  # Velocidade do movimento vertical
-#         self.amplitude = amplitude  # Distância máxima que a plataforma pode se mover
-#         self.y_inicial = y  # Posição inicial
-#         self.direcao = 1  # 1 para descer, -1 para subir
-#
-#     def update(self):
-#         # Move a plataforma dentro do intervalo definido por amplitude
-#         self.rect.y += self.velocidade * self.direcao
-#
-#         # Inverte a direção se atingir os limites superior ou inferior
-#         if abs(self.rect.y - self.y_inicial) >= self.amplitude:
-#             self.direcao *= -1
 
 class Inimigo(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -406,7 +371,7 @@ def jogo():
 
         plataformas.update()
 
-        # **Desenha as vidas na tela**
+        # Desenha as vidas na tela
         desenhar_vidas(screen, personagem.vidas)
 
         # Detectar interação com a placa

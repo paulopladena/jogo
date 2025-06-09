@@ -5,6 +5,17 @@ SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+# DESERTO
+# 1F, 4F, 13F, 20F, 15F, 16F, 18F
+
+# FLORESTA
+# 3F, 6D, 7M, 8M, 10D, 12D, 19F
+
+# NEVE
+# 2F, 5D, 9D, 11D, 14F, 17F
+
+# F = FÁCIL; M = MÉDIO; D = DIFÍCIL
+
 #BANCO DE QUESTÕES
 bq = [
             {
@@ -15,10 +26,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "B",
+                "correta": "C",
                 "tema": "Interpretação crítica de dados estatísticos",
-                "nivel": 2,
-                "dica": pygame.image.load("1D.png")
+                "nivel": 1,
+                "dica": pygame.image.load("12D.png"),
+                "feedback": pygame.image.load("1F.png")
             },
             {
                 "imagem": pygame.image.load("2.png"),
@@ -30,8 +42,9 @@ bq = [
                 },
                 "correta": "B",
                 "tema": "Interpretação crítica de dados estatísticos",
-                "nivel": 1,
-                "dica": pygame.image.load("2D.png")
+                "nivel": 3,
+                "dica": pygame.image.load("12D.png"),
+                "feedback": pygame.image.load("2F.png")
             },
             {
                 "imagem": pygame.image.load("3.png"),
@@ -41,10 +54,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "B",
+                "correta": "A",
                 "tema": "Tomada de decisões baseada em probabilidades no cotidiano",
-                "nivel": 1,
-                "dica": pygame.image.load("3D.png")
+                "nivel": 2,
+                "dica": pygame.image.load("34D.png"),
+                "feedback": pygame.image.load("3F.png")
             },
             {
                 "imagem": pygame.image.load("4.png"),
@@ -54,10 +68,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "C",
+                "correta": "A",
                 "tema": "Tomada de decisões baseada em probabilidades no cotidiano",
                 "nivel": 1,
-                "dica": pygame.image.load("4D.png")
+                "dica": pygame.image.load("34D.png"),
+                "feedback": pygame.image.load("4F.png")
             },
             {
                 "imagem": pygame.image.load("5.png"),
@@ -67,10 +82,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "B",
+                "correta": "C",
                 "tema": "Estatística aplicada à pesquisa e comunicação de dados",
-                "nivel": 1,
-                "dica": pygame.image.load("5D.png")
+                "nivel": 3,
+                "dica": pygame.image.load("56D.png"),
+                "feedback": pygame.image.load("5F.png")
             },
             {
                 "imagem": pygame.image.load("6.png"),
@@ -80,10 +96,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "C",
+                "correta": "A",
                 "tema": "Estatística aplicada à pesquisa e comunicação de dados",
-                "nivel": 1,
-                "dica": pygame.image.load("6D.png")
+                "nivel": 2,
+                "dica": pygame.image.load("56D.png"),
+                "feedback": pygame.image.load("6F.png")
             },
             {
                 "imagem": pygame.image.load("7.png"),
@@ -93,10 +110,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "C",
+                "correta": "D",
                 "tema": "Combinatória e princípios de contagem",
                 "nivel": 2,
-                "dica": pygame.image.load("7D.png")
+                "dica": pygame.image.load("78D.png"),
+                "feedback": pygame.image.load("7F.png")
             },
             {
                 "imagem": pygame.image.load("8.png"),
@@ -106,10 +124,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "B",
+                "correta": "C",
                 "tema": "Combinatória e princípios de contagem",
                 "nivel": 2,
-                "dica": pygame.image.load("8D.png")
+                "dica": pygame.image.load("78D.png"),
+                "feedback": pygame.image.load("8F.png")
             },
             {
                 "imagem": pygame.image.load("9.png"),
@@ -119,10 +138,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "B",
+                "correta": "A",
                 "tema": "Introdução à probabilidade e contagem de eventos aleatórios",
-                "nivel": 2,
-                "dica": pygame.image.load("9D.png")
+                "nivel": 3,
+                "dica": pygame.image.load("910D.png"),
+                "feedback": pygame.image.load("9F.png")
             },
             {
                 "imagem": pygame.image.load("10.png"),
@@ -132,10 +152,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "C",
+                "correta": "B",
                 "tema": "Introdução à probabilidade e contagem de eventos aleatórios",
                 "nivel": 2,
-                "dica": pygame.image.load("10D.png")
+                "dica": pygame.image.load("910D.png"),
+                "feedback": pygame.image.load("10F.png")
             },
             {
                 "imagem": pygame.image.load("11.png"),
@@ -145,10 +166,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "D",
+                "correta": "C",
                 "tema": "Probabilidade e análise de eventos em experimentos sucessivos",
                 "nivel": 3,
-                "dica": pygame.image.load("11D.png")
+                "dica": pygame.image.load("1112D.png"),
+                "feedback": pygame.image.load("11F.png")
             },
             {
                 "imagem": pygame.image.load("12.png"),
@@ -158,10 +180,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "C",
+                "correta": "B",
                 "tema": "Probabilidade e análise de eventos em experimentos sucessivos",
-                "nivel": 3,
-                "dica": pygame.image.load("12D.png")
+                "nivel": 2,
+                "dica": pygame.image.load("1112D.png"),
+                "feedback": pygame.image.load("12F.png")
             },
             {
                 "imagem": pygame.image.load("13.png"),
@@ -174,7 +197,8 @@ bq = [
                 "correta": "B",
                 "tema": "Cálculo das medidas de tendência central e de dispersão",
                 "nivel": 1,
-                "dica": pygame.image.load("13D.png")
+                "dica": pygame.image.load("1314D.png"),
+                "feedback": pygame.image.load("13F.png")
             },
             {
                 "imagem": pygame.image.load("14.png"),
@@ -184,10 +208,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "C",
+                "correta": "D",
                 "tema": "Cálculo das medidas de tendência central e de dispersão",
-                "nivel": 1,
-                "dica": pygame.image.load("14D.png")
+                "nivel": 3,
+                "dica": pygame.image.load("1314D.png"),
+                "feedback": pygame.image.load("14F.png")
             },
             {
                 "imagem": pygame.image.load("15.png"),
@@ -200,7 +225,8 @@ bq = [
                 "correta": "D",
                 "tema": "Construção e interpretação de tabelas e gráficos de frequências",
                 "nivel": 1,
-                "dica": pygame.image.load("15D.png")
+                "dica": pygame.image.load("1516D.png"),
+                "feedback": pygame.image.load("15F.png")
             },
             {
                 "imagem": pygame.image.load("16.png"),
@@ -213,7 +239,8 @@ bq = [
                 "correta": "D",
                 "tema": "Construção e interpretação de tabelas e gráficos de frequências",
                 "nivel": 1,
-                "dica": pygame.image.load("16D.png")
+                "dica": pygame.image.load("1516D.png"),
+                "feedback": pygame.image.load("16F.png")
             },
             {
                 "imagem": pygame.image.load("17.png"),
@@ -225,8 +252,9 @@ bq = [
                 },
                 "correta": "C",
                 "tema": "Interpretação de conjuntos de dados",
-                "nivel": 2,
-                "dica": pygame.image.load("17D.png")
+                "nivel": 3,
+                "dica": pygame.image.load("17D.png"),
+                "feedback": pygame.image.load("17F.png")
             },
             {
                 "imagem": pygame.image.load("18.png"),
@@ -238,8 +266,9 @@ bq = [
                 },
                 "correta": "C",
                 "tema": "Interpretação de conjuntos de dados",
-                "nivel": 2,
-                "dica": pygame.image.load("18D.png")
+                "nivel": 1,
+                "dica": pygame.image.load("18D.png"),
+                "feedback": pygame.image.load("18F.png")
             },
             {
                 "imagem": pygame.image.load("19.png"),
@@ -249,10 +278,11 @@ bq = [
                     "C": pygame.Rect(0, SCREEN_HEIGHT // 4 + 315, 40, 40),
                     "D": pygame.Rect(0, SCREEN_HEIGHT // 4 + 380, 40, 40)
                 },
-                "correta": "D",
+                "correta": "B",
                 "tema": "Identificação de espaços amostrais e cálculo de probabilidades",
                 "nivel": 2,
-                "dica": pygame.image.load("19D.png")
+                "dica": pygame.image.load("1920D.png"),
+                "feedback": pygame.image.load("19F.png")
             },
             {
                 "imagem": pygame.image.load("20.png"),
@@ -264,8 +294,9 @@ bq = [
                 },
                 "correta": "C",
                 "tema": "Identificação de espaços amostrais e cálculo de probabilidades",
-                "nivel": 3,
-                "dica": pygame.image.load("20D.png")
+                "nivel": 1,
+                "dica": pygame.image.load("1920D.png"),
+                "feedback": pygame.image.load("20F.png")
             },
         ]
 
@@ -288,7 +319,14 @@ for i in list(range(len(bq))):
     if bq[i]['nivel'] == 1:
         quest_fase1.append(i)
 
-selec1 = random.sample(quest_fase1, 3)
+# IDs das questões parecidas
+parecidas = {15, 16}
+
+# Tenta sortear até conseguir uma amostra que contenha no máximo uma das parecidas
+while True:
+    selec1 = random.sample(quest_fase1, 6)
+    if len(parecidas.intersection(selec1)) <= 1:
+        break
 
 
 # FASE 2
@@ -306,7 +344,14 @@ for i in list(range(20)):
     if bq[i]['nivel'] == 2:
         quest_fase2.append(i)
 
-selec2 = random.sample(quest_fase2, 3)
+# IDs das questões parecidas
+parecidas = {7, 8}
+
+# Tenta sortear até conseguir uma amostra que contenha no máximo uma das parecidas
+while True:
+    selec2 = random.sample(quest_fase2, 6)
+    if len(parecidas.intersection(selec2)) <= 1:
+        break
 
 
 # FASE 3
@@ -324,6 +369,7 @@ for i in list(range(20)):
     if bq[i]['nivel'] == 3:
         quest_fase3.append(i)
 
-dif = [x for x in quest_fase2 if x not in selec2]
-selec3 = quest_fase3 + random.sample((dif), 1)
+# dif = [x for x in quest_fase2 if x not in selec2]
+# selec3 = quest_fase3 + random.sample((dif), 6)
+selec3 = random.sample(quest_fase3, 6)
 

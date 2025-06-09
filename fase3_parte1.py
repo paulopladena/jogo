@@ -90,12 +90,6 @@ class Personagem(pygame.sprite.Sprite):
                 self.velocidade_y = 0
                 self.no_chao = True
 
-        # for seta in setas:
-        #     if self.rect.colliderect(seta.rect) and self.velocidade_y >= 0:
-        #         self.rect.bottom = seta.rect.top
-        #         self.velocidade_y = 0
-        #         self.no_chao = True
-
         for chao in chaos:
             if self.rect.colliderect(chao.rect) and self.velocidade_y >= 0:
                 self.rect.bottom = chao.rect.top
@@ -124,22 +118,9 @@ class Personagem(pygame.sprite.Sprite):
                 elif movimento < 0:  # Indo para a esquerda
                     self.rect.left = plataforma.rect.right
 
-
-        # for inimigo in inimigos:
-        #     if self.rect.colliderect(inimigo.rect) and self.velocidade_y >= 0:
-        #         self.rect.bottom = inimigo.rect.top
-        #         self.velocidade_y = 0
-        #         self.no_chao = True
-        #         self.levar_dano()
-
         for inimigo in inimigos:
             if self.rect.colliderect(inimigo.rect):
                 self.levar_dano()
-                # Ajustar posição com base no movimento
-                # if movimento > 0:  # Indo para a direita
-                #     self.rect.right = inimigo.rect.left
-                # elif movimento < 0:  # Indo para a esquerda
-                #     self.rect.left = inimigo.rect.right
 
         for chao in chaos:
             if self.rect.colliderect(chao.rect):
@@ -308,8 +289,6 @@ def jogo():
 
     #PLATAFORMA
     l1 = [(650, SCREEN_HEIGHT - 225)]
-
-    #l1 = [(x, SCREEN_HEIGHT - (50 + (x - 200) // 2)) for x in range(400, 1000, 200)]
 
     for x, y in l1:
         plataformas.add(Plataforma(x, y, velocidade=2, amplitude=60))

@@ -18,14 +18,12 @@ perso_mov_e2 = pygame.image.load('spritee2.png').convert_alpha()
 perso_mov_e3 = pygame.image.load('spritee3.png').convert_alpha()
 pedra_img = pygame.image.load('pedra.png').convert_alpha()
 chao_img = pygame.image.load('chao.png').convert_alpha()
-inimigo_img = pygame.image.load('inimigo.png').convert_alpha()
 mumia_img = pygame.image.load('mumia.png').convert_alpha()
 cacto_img = pygame.image.load('cacto.png').convert_alpha()
 bg = pygame.image.load('bg_piramide.png').convert_alpha()
 vida_img = pygame.image.load('vida.png').convert_alpha()
 dica_img = pygame.image.load('dica.png')
-dica1_img = pygame.image.load('1D.png')
-dica2_img = pygame.image.load('2D.png')
+
 
 # Cores
 WHITE = (255, 255, 255)
@@ -104,13 +102,6 @@ class Personagem(pygame.sprite.Sprite):
             import game_over
             game_over.tela_fim()
 
-        # Checar colisão com plataformas
-        # colidiu_plataforma = pygame.sprite.spritecollide(self, plataformas, False)
-        # if colidiu_plataforma and self.velocidade_y >= 0:
-        #     self.rect.bottom = colidiu_plataforma[0].rect.top
-        #     self.no_chao = True
-        #     self.velocidade_y = 0
-
         # Checar colisão com chão
         colidiu_chao = pygame.sprite.spritecollide(self, chaos, False)
         if colidiu_chao and self.velocidade_y >= 0:
@@ -138,17 +129,6 @@ class Personagem(pygame.sprite.Sprite):
             import fase1_parte2
             fase1_parte2.jogo()
 
-
-            # if mostrar_dica:
-            #     canal.pause()
-            #     import fase1_parte2_dica
-            #     fase1_parte2_dica.jogo()
-            # else:
-            #     canal.pause()
-            #     import fase1_parte2
-            #     fase1_parte2.jogo()
-
-
     def soltar_tecla(self, key):
         """
         Define a imagem apropriada quando uma tecla é liberada.
@@ -157,7 +137,6 @@ class Personagem(pygame.sprite.Sprite):
             self.image = perso_parado_e  # Imagem parada olhando para a esquerda
         elif key == pygame.K_RIGHT:
             self.image = perso_parado_d  # Imagem parada olhando para a direita
-
 
 class Plataforma(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -235,15 +214,6 @@ def fase1():
     personagem = Personagem()
 
     papel = Papel(400, SCREEN_HEIGHT - 100)
-
-    # plataforma1 = Plataforma(10, SCREEN_HEIGHT - 500)
-    # plataforma2 = Plataforma(60, SCREEN_HEIGHT - 500)
-    # plataforma3 = Plataforma(90, SCREEN_HEIGHT - 500)
-    # plataforma4 = Plataforma(200, SCREEN_HEIGHT - 500)
-    # plataformas = pygame.sprite.Group()
-    #
-    # lista_plataformas = [plataforma1, plataforma2, plataforma3, plataforma4]
-    # plataformas.add(lista_plataformas)
 
     chao1 = Chao(500, SCREEN_HEIGHT - 300, 100, 100) #inicial
     chao2 = Chao(700, SCREEN_HEIGHT - 550, 100, 100)

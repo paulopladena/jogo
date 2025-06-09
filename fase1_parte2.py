@@ -19,7 +19,6 @@ perso_mov_e2 = pygame.image.load('spritee2.png').convert_alpha()
 perso_mov_e3 = pygame.image.load('spritee3.png').convert_alpha()
 pedra_img = pygame.image.load('pedra.png').convert_alpha()
 chao_img = pygame.image.load('chao.png').convert_alpha()
-inimigo_img = pygame.image.load('inimigo.png').convert_alpha()
 cacto_img = pygame.image.load('cacto.png').convert_alpha()
 placa_img = pygame.image.load('placa2.png').convert_alpha()
 vida_img = pygame.image.load('vida.png').convert_alpha()
@@ -84,18 +83,6 @@ class Personagem(pygame.sprite.Sprite):
 
         # Verificar colisão com o chão e plataformas
         self.no_chao = False
-        # for plataforma in plataformas:
-        #     if self.rect.colliderect(plataforma.rect) and self.velocidade_y >= 0:
-        #         self.rect.bottom = plataforma.rect.top
-        #         self.velocidade_y = 0
-        #         self.no_chao = True
-        #         self.levar_dano()
-
-        # for placa in placas:
-        #     if self.rect.colliderect(placa.rect) and self.velocidade_y >= 0:
-        #         self.rect.bottom = placa.rect.top
-        #         self.velocidade_y = 0
-        #         self.no_chao = True
 
         for chao in chaos:
             if self.rect.colliderect(chao.rect) and self.velocidade_y >= 0:
@@ -128,19 +115,6 @@ class Personagem(pygame.sprite.Sprite):
         for plataforma in plataformas:
             if self.rect.colliderect(plataforma.rect):
                 self.levar_dano()
-                # # Ajustar posição com base no movimento
-                # if movimento > 0:  # Indo para a direita
-                #     self.rect.right = plataforma.rect.left
-                # elif movimento < 0:  # Indo para a esquerda
-                #     self.rect.left = plataforma.rect.right
-
-        # for placa in placas:
-        #     if self.rect.colliderect(placa.rect):
-        #         # Ajustar posição com base no movimento
-        #         if movimento > 0:  # Indo para a direita
-        #             self.rect.right = placa.rect.left
-        #         elif movimento < 0:  # Indo para a esquerda
-        #             self.rect.left = placa.rect.right
 
         for chao in chaos:
             if self.rect.colliderect(chao.rect):
@@ -185,7 +159,7 @@ class Personagem(pygame.sprite.Sprite):
             else:
                 self.image = perso_parado_d
 
-        # **Efeito de Dano**: Deixa a imagem vermelha por 1 segundo
+        # Efeito de Dano: Deixa a imagem vermelha por 1 segundo
         if self.dano_ativo:
             tempo_atual = pygame.time.get_ticks()
             if tempo_atual - self.tempo_dano < 1000:  # Dura 1 segundo
@@ -286,7 +260,7 @@ def desenhar_parallax(tela, parallax, deslocamento, largura_tela):
 # Função para desenhar as vidas na tela
 def desenhar_vidas(tela, vidas):
     for i in range(vidas):
-        tela.blit(vida_img, (10 + i * 40, 10))  # ➜ Exibe os corações no topo
+        tela.blit(vida_img, (10 + i * 40, 10))  # Exibe os corações no topo
 
 def desenhar_dica(tela):
     tela.blit(dica_img, (10 + 4 * 40, 5))
@@ -402,7 +376,7 @@ def jogo():
         portals.draw(screen)
         screen.blit(personagem.image, personagem.rect)
 
-        # **Desenha as vidas na tela**
+        # Desenha as vidas na tela
         desenhar_vidas(screen, personagem.vidas)
 
         if carrega_vidas.mostrar_dica_fase1:
@@ -415,7 +389,7 @@ def jogo():
 
         # Detectar interação com a placa
         if pygame.sprite.collide_rect(personagem, placa):
-            texto = fonte.render("Pressione S para ler", True, BLACK)
+            texto = fonte.render("Pressione S para ler", True, WHITE)
             screen.blit(texto, (placa.rect.x - 20, placa.rect.y - 50))
             if keys[pygame.K_s]:
                 placa.mostrar_texto = True

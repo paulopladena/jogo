@@ -53,7 +53,7 @@ class Personagem(pygame.sprite.Sprite):
         self.limite_troca_sprite = 10
         self.tempo_dano = None
         self.dano_ativo = False  # Indica se o efeito de dano está ativo
-        self.vidas = carrega_vidas.vidas_personagem  # ➜ Inicia com 3 vidas
+        self.vidas = carrega_vidas.vidas_personagem
 
     def levar_dano(self):
         """Ativa o estado de dano e reduz uma vida."""
@@ -90,12 +90,6 @@ class Personagem(pygame.sprite.Sprite):
                 self.velocidade_y = 0
                 self.no_chao = True
 
-        # for seta in setas:
-        #     if self.rect.colliderect(seta.rect) and self.velocidade_y >= 0:
-        #         self.rect.bottom = seta.rect.top
-        #         self.velocidade_y = 0
-        #         self.no_chao = True
-
         for chao in chaos:
             if self.rect.colliderect(chao.rect) and self.velocidade_y >= 0:
                 self.rect.bottom = chao.rect.top
@@ -108,18 +102,19 @@ class Personagem(pygame.sprite.Sprite):
                 import fase2_dica
                 fase2_dica.jogo1()
 
+        self.rect.x += movimento
+        if self.rect.x >= 780:
+            canal.pause()
+            import carrega_vidas
+            import fase2_dica
+            fase2_dica.jogo1()
+
         # Evitar que caia do chão
         if self.rect.bottom >= SCREEN_HEIGHT - 50:
             self.rect.bottom = SCREEN_HEIGHT - 50
             self.no_chao = True
             self.velocidade_y = 0
 
-        self.rect.x += movimento
-        if self.rect.x >= 900:
-            canal.pause()
-            import carrega_vidas
-            import fase2_parte3
-            fase2_parte3.jogo(carrega_vidas.vidas_personagem)
 
         # Verificar colisão horizontal com plataformas
         for plataforma in plataformas:
@@ -138,14 +133,6 @@ class Personagem(pygame.sprite.Sprite):
                 self.no_chao = True
                 self.levar_dano()
 
-        # for inimigo in inimigos:
-        #     if self.rect.colliderect(inimigo.rect):
-        #         self.levar_dano()
-        #         # Ajustar posição com base no movimento
-        #         if movimento > 0:  # Indo para a direita
-        #             self.rect.right = inimigo.rect.left
-        #         elif movimento < 0:  # Indo para a esquerda
-        #             self.rect.left = inimigo.rect.right
 
         for chao in chaos:
             if self.rect.colliderect(chao.rect):
@@ -336,14 +323,6 @@ def jogo():
     portals = pygame.sprite.Group()
     masks = pygame.sprite.Group()
 
-    #PLATAFORMA
-
-    # l1 = [(x, SCREEN_HEIGHT - (50 + (x - 200) // 2)) for x in range(600, 700, 100)]
-    # l2 = [(x, SCREEN_HEIGHT - 350) for x in range(900, 2100, 400)]
-    # p1 = l1+l2
-    # for x, y in p1:
-    #     plataformas.add(Plataforma(x, y, velocidade=2, amplitude=60))
-
     #SETA
     posicoes_setas = [
         (250, SCREEN_HEIGHT - 125)
@@ -464,7 +443,7 @@ def jogo():
         #plataformas.update()
         inimigos.update()
 
-        # **Desenha as vidas na tela**
+        # Desenha as vidas na tela
         desenhar_vidas(screen, personagem.vidas)
 
         # Detectar interação com a placa

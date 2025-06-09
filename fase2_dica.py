@@ -19,7 +19,6 @@ av_img = pygame.image.load('agua_viva.png').convert_alpha()
 chao_img = pygame.image.load('chao.png').convert_alpha()
 vida_img = pygame.image.load('vida.png').convert_alpha()
 dica_img = pygame.image.load('dica.png')
-caixa_dialogo_img = pygame.image.load('caixa_dialogo.png')
 
 # Cores
 WHITE = (255, 255, 255)
@@ -113,7 +112,6 @@ class Personagem(pygame.sprite.Sprite):
         self.image = self.image_original
 
 
-
 class Plataforma(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -171,10 +169,10 @@ def desenhar_parallax(tela, parallax, deslocamento, largura_tela):
 # Função para desenhar as vidas na tela
 def desenhar_vidas(tela, vidas):
     for i in range(vidas):
-        tela.blit(vida_img, (10 + i * 40, 10))  # ➜ Exibe os corações no topo
+        tela.blit(vida_img, (10 + i * 40, 10))  # Exibe os corações no topo
 
 def desenhar_dica(tela):
-    tela.blit(dica_img, (10 + 4 * 40, 5))
+    tela.blit(dica_img, (10 + 5 * 40, 5))
 
 mostrar_dica = False
 
@@ -197,9 +195,9 @@ def jogo1():
 
     #PARTE1 HORIZONTAL
     l1 = [(x, SCREEN_HEIGHT - 150) for x in range(200, 700, 100)] #CHAO
-    l2 = [(x, SCREEN_HEIGHT - 350) for x in range(200, 600, 100)]
-    l3 = [(x, SCREEN_HEIGHT - 550) for x in range(200, 700, 100)]
-    l4 = [(x, SCREEN_HEIGHT - 700) for x in range(200, 700, 100)] #TOP
+    l2 = [(x, SCREEN_HEIGHT - 350) for x in range(350, 600, 100)]
+    l3 = [(x, SCREEN_HEIGHT - 550) for x in range(350, 700, 100)]
+    l4 = [(x, SCREEN_HEIGHT - 700) for x in range(350, 700, 100)] #TOP
     p1 = l1 + l2 + l3 + l4
 
     #PARTE2 (DIAGONAL CRESCENTE)
@@ -300,9 +298,6 @@ def jogo1():
         if pygame.sprite.collide_rect(personagem, papel):
             carrega_vidas.mostrar_dica_fase2 = True
             papels.remove(papel)
-            # global mostrar_dica
-            # mostrar_dica = True
-            # papels.remove(papel)
 
 
         # Desenhar plataformas e personagem
@@ -312,7 +307,7 @@ def jogo1():
         screen.blit(personagem.image, personagem.rect)
 
 
-        # **Desenha as vidas na tela**
+        # Desenha as vidas na tela
         desenhar_vidas(screen, personagem.vidas)
 
         if carrega_vidas.mostrar_dica_fase2:

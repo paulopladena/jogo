@@ -8,18 +8,14 @@ pygame.init()
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("jogo_fase1_dica")
+pygame.display.set_caption("jogo_fase3_dica")
 
 # Carregar imagens
 nave_img = pygame.image.load('nave.png').convert_alpha()
-inimigo_img = pygame.image.load('inimigo.png').convert_alpha()
 nave2_img = pygame.image.load('nave2.png').convert_alpha()
 nave3_img = pygame.image.load('nave3.png').convert_alpha()
-cacto_img = pygame.image.load('cacto.png').convert_alpha()
-bg = pygame.image.load('bg_piramide.png').convert_alpha()
 vida_img = pygame.image.load('vida.png').convert_alpha()
 dica_img = pygame.image.load('dica.png')
-caixa_dialogo_img = pygame.image.load('caixa_dialogo.png')
 
 # Cores
 WHITE = (255, 255, 255)

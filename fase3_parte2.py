@@ -39,7 +39,6 @@ personagem_na_nave = False  # Define se o personagem já entrou na nave
 # Grupo de tiros
 tiros = pygame.sprite.Group()
 
-
 class Personagem(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -103,6 +102,10 @@ class Personagem(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE] and self.no_chao:
             self.velocidade_y = -15
             self.no_chao = False
+
+        if self.rect.colliderect(nave.rect):
+            texto = fonte.render("Pressione S para pilotar a nave", True, WHITE)
+            screen.blit(texto, (nave.rect.x + 80, nave.rect.y - 50))
 
         # Verificar se o personagem entrou na nave
         if self.rect.colliderect(nave.rect) and keys[pygame.K_s]:

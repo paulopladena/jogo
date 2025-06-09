@@ -96,12 +96,6 @@ class Personagem(pygame.sprite.Sprite):
                 self.velocidade_y = 0
                 self.no_chao = True
 
-        # for seta in setas:
-        #     if self.rect.colliderect(seta.rect) and self.velocidade_y >= 0:
-        #         self.rect.bottom = seta.rect.top
-        #         self.velocidade_y = 0
-        #         self.no_chao = True
-
         for chao in chaos:
             if self.rect.colliderect(chao.rect) and self.velocidade_y >= 0:
                 self.rect.bottom = chao.rect.top
@@ -133,15 +127,6 @@ class Personagem(pygame.sprite.Sprite):
                 self.velocidade_y = 0
                 self.no_chao = True
                 self.levar_dano()
-
-        # for inimigo in inimigos:
-        #     if self.rect.colliderect(inimigo.rect):
-        #         self.levar_dano()
-        #         # Ajustar posição com base no movimento
-        #         if movimento > 0:  # Indo para a direita
-        #             self.rect.right = inimigo.rect.left
-        #         elif movimento < 0:  # Indo para a esquerda
-        #             self.rect.left = inimigo.rect.right
 
         for chao in chaos:
             if self.rect.colliderect(chao.rect):
@@ -290,59 +275,78 @@ class NPC(Personagem): # NPC herda a classe Personagem
         self.pergunta_exibida = False
         self.questao_atual = 0
         self.resposta_selecionada = None
-        self.mensagem_resposta = None  # Mensagem temporária de acerto/erro
-        self.mensagem_timer = 0
         self.contador_certo = 0
         self.contador_errado = 0
+        self.estado_feedback = None
+        self.tempo_estado = 0
         self.personagem = personagem
         self.questoes = [carrega_vidas.bq[i] for i in carrega_vidas.selec2]
 
     def mostrar_mensagem(self):
-        """Exibe a pergunta, as opções e a mensagem de acerto/erro."""
         questao = self.questoes[self.questao_atual]
-        screen.blit(questao["imagem"], (0, 0))
+        agora = pygame.time.get_ticks()
 
-        for opcao, rect in questao["opcoes"].items():
-            cor = BLACK  # Padrão: preto
-            if self.resposta_selecionada:
-                if opcao == self.resposta_selecionada:
-                    cor = GREEN if opcao == questao["correta"] else RED  # Verde ou vermelho
+        if self.estado_feedback == 'correta':
+            screen.blit(pygame.image.load('resposta_certa.png'), (0, 0))
+            self.exibir_cronometro(agora)
 
-            pygame.draw.rect(screen, cor, rect)  # Desenha quadrado da opção
-            texto = fonte.render(opcao, True, WHITE)
-            screen.blit(texto, (rect.x + 15, rect.y + 10))
-
-        # Exibe a mensagem "Acertou!" ou "Errou!" por 1 segundo
-        if self.mensagem_resposta:
-            msg_texto = fonte.render(self.mensagem_resposta, True, WHITE)
-            screen.blit(msg_texto, (350, 400))
-
-            # Checa se o tempo de exibição já passou
-            if pygame.time.get_ticks() > self.mensagem_timer:
-                self.mensagem_resposta = None  # Limpa mensagem
+            if agora > self.tempo_estado:
+                self.estado_feedback = None
                 self.ir_para_proxima_pergunta()
+
+        elif self.estado_feedback == 'errada_1':
+            screen.blit(pygame.image.load('resposta_errada.png'), (0, 0))
+            self.exibir_cronometro(agora)
+
+            if agora > self.tempo_estado:
+                self.estado_feedback = 'errada_2'
+                self.tempo_estado = agora + 10000  # exibe feedback por 10s
+
+        elif self.estado_feedback == 'errada_2':
+            screen.blit(pygame.image.load('feedback_questao.png'), (0, 0))
+            screen.blit(questao["feedback"], (250, SCREEN_HEIGHT // 4))
+            self.exibir_cronometro(agora)
+
+            if agora > self.tempo_estado:
+                self.estado_feedback = None
+                self.ir_para_proxima_pergunta()
+
+        else:
+            # Exibe pergunta e opções
+            screen.blit(questao["imagem"], (0, 0))
+            for opcao, rect in questao["opcoes"].items():
+                cor = WHITE
+                if self.resposta_selecionada:
+                    if opcao == self.resposta_selecionada:
+                        cor = GREEN if opcao == questao["correta"] else RED
+                pygame.draw.rect(screen, cor, rect)
+                texto = fonte.render(opcao, True, BLACK)
+                screen.blit(texto, (rect.x + 15, rect.y + 10))
 
     def selecionar_opcao(self, mouse_pos):
         """Verifica clique na opção e exibe mensagem de acerto ou erro."""
-        questao = self.questoes[self.questao_atual]
 
+        if self.resposta_selecionada:
+            return  # Impede múltiplos cliques
+
+        questao = self.questoes[self.questao_atual]
         for opcao, rect in questao["opcoes"].items():
             if rect.collidepoint(mouse_pos):
                 self.resposta_selecionada = opcao
 
                 if opcao == questao["correta"]:
-                    self.mensagem_resposta = " "
+                    self.estado_feedback = 'correta'
+                    self.tempo_estado = pygame.time.get_ticks() + 5000  # 5s
                     self.contador_certo += 1
                     lista2.append(questao["tema"])
                     lista_certo.append('certo')
                 else:
-                    self.mensagem_resposta = " "
+                    self.estado_feedback = 'errada_1'
+                    self.tempo_estado = pygame.time.get_ticks() + 10000  # 10s
                     self.personagem.levar_dano()
                     self.contador_errado += 1
                     lista2.append(questao["tema"])
                     lista_certo.append('errado')
-
-                self.mensagem_timer = pygame.time.get_ticks() + 1000  # Exibe por 1 segundo
                 break
 
     def ir_para_proxima_pergunta(self):
@@ -353,9 +357,12 @@ class NPC(Personagem): # NPC herda a classe Personagem
         if self.contador_certo >= 2:
             canal.pause()
             tela_prox_fase()
-        if self.contador_errado >= 2:
-            canal.pause()
-            tela_fim()
+
+    def exibir_cronometro(self, agora):
+        segundos_restantes = max(0, (self.tempo_estado - agora) // 1000)
+        fonte_cronometro = pygame.font.SysFont(None, 64)
+        texto = fonte_cronometro.render(str(segundos_restantes), True, WHITE)
+        screen.blit(texto, (SCREEN_WIDTH - 100, 20))  # canto superior direito
 
 # Carregar as imagens do parallax
 def carregar_parallax(caminhos_imagens, largura_tela):
@@ -408,20 +415,6 @@ def tela_prox_fase():
         carrega_vidas.lista_fase2 = lista2
         carrega_vidas.lista_acerto_fase2 = lista_certo
 
-        # y = 400
-        # for tema in lista:
-        #
-        #     if tema in lista_certo:
-        #         cor = GREEN
-        #         texto = fonte_grande.render('TEMA ACERTADO: ' + tema, True, cor)
-        #         screen.blit(texto, (150, y))
-        #         y += 40
-        #     else:
-        #         cor = RED
-        #         texto = fonte_grande.render('TEMA ERRADO: ' + tema, True, cor)
-        #         screen.blit(texto, (150, y))
-        #         y += 40
-
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -457,20 +450,6 @@ def tela_fim():
         carrega_vidas.lista_fase2 = lista2
         carrega_vidas.lista_acerto_fase2 = lista_certo
 
-        # y = 500
-        # for tema in lista:
-        #
-        #     if tema in lista_certo:
-        #         cor = GREEN
-        #         texto = fonte_grande.render('TEMA ACERTADO: ' + tema, True, cor)
-        #         screen.blit(texto, (150, y))
-        #         y += 40
-        #     else:
-        #         cor = RED
-        #         texto = fonte_grande.render('TEMA ERRADO: ' + tema, True, cor)
-        #         screen.blit(texto, (150, y))
-        #         y += 40
-
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -504,14 +483,6 @@ def jogo():
     inimigos = pygame.sprite.Group()
     chefes = pygame.sprite.Group()
     papel = Papel()
-
-    #PLATAFORMA
-
-    # l1 = [(x, SCREEN_HEIGHT - (50 + (x - 200) // 2)) for x in range(600, 700, 100)]
-    # l2 = [(x, SCREEN_HEIGHT - 350) for x in range(900, 2100, 400)]
-    # p1 = l1+l2
-    # for x, y in p1:
-    #     plataformas.add(Plataforma(x, y, velocidade=2, amplitude=60))
 
     #SETA
     posicoes_setas = [
@@ -620,15 +591,6 @@ def jogo():
         #plataformas.update()
         inimigos.update()
 
-        # Detectar interação com a seta
-        # if pygame.sprite.collide_rect(personagem, seta):
-        #     texto = fonte.render("Pressione S para ler", True, WHITE)
-        #     screen.blit(texto, (seta.rect.x - 20, seta.rect.y - 50))
-        #     if keys[pygame.K_s]:
-        #         seta.mostrar_texto = True
-        #         if seta.mostrar_texto:
-        #             seta.mostrar_mensagem()
-
         # Detectar interação com a NPC
         if pygame.sprite.collide_rect(personagem, chefe):
             texto = fonte.render("Pressione S para responder as perguntas", True, WHITE)
@@ -638,7 +600,7 @@ def jogo():
                 if chefe.mostrar_texto:
                     chefe.mostrar_mensagem()
 
-        # **Desenha as vidas na tela**
+        # Desenha as vidas na tela
         desenhar_vidas(screen, personagem.vidas)
 
         # Detectar interação com a placa
